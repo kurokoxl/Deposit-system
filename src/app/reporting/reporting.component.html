@@ -1,0 +1,68 @@
+<h1>Transaction Reporting</h1>
+<div class="filter-container">
+  <p-calendar [(ngModel)]="startDate" placeholder="Start Date" dateFormat="yy-mm-dd"></p-calendar>
+  <p-calendar [(ngModel)]="endDate" placeholder="End Date" dateFormat="yy-mm-dd"></p-calendar>
+  <p-button severity="success" label="Filter" (onClick)="filterByDate()"></p-button>
+</div>
+<p-button severity="success"  label="Export to CSV" icon="pi pi-file" (onClick)="exportToCSV()"></p-button>
+<p-table [value]="filteredTransactions">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>Bank Name</th>
+        <th>Category</th>
+        <th>Amount</th>
+        <th>Date</th>
+        <th>Status</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-transaction>
+      <tr (click)="showTransactionDetails(transaction)">
+        <td>{{ transaction.bankName }}</td>
+        <td>{{ transaction.category }}</td>
+        <td>{{ transaction.amount | currency: 'USD' }}</td>
+        <td>{{ transaction.date | date: 'mediumDate' }}</td>
+        <td>{{ transaction.status }}</td>
+      </tr>
+    </ng-template>
+  </p-table>
+  
+  <p-dialog [(visible)]="transactionDialog" [modal]="true" [style]="{ width: '450px' }" header="Transaction Details">
+    <ng-template pTemplate="content">
+      <div *ngIf="selectedTransaction">
+        <p><strong>Bank Name:</strong> {{ selectedTransaction.bankName }}</p>
+        <p><strong>Category:</strong> {{ selectedTransaction.category }}</p>
+        <p><strong>Amount:</strong> {{ selectedTransaction.amount | currency: 'USD' }}</p>
+        <p><strong>Date:</strong> {{ selectedTransaction.date | date: 'mediumDate' }}</p>
+        <p><strong>Status:</strong> {{ selectedTransaction.status }}</p>
+      </div>
+    </ng-template>
+  </p-dialog>
+  
+<!-- Report Summary Table -->
+<div class="summary-table">
+  <h2>Report Summary</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Total Withdrawals</th>
+        <th>Total Deposits</th>
+        <th>Total Success Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ totalWithdrawals | currency: 'USD' }}</td>
+        <td>{{ totalDeposits | currency: 'USD' }}</td>
+        <td>{{ totalSuccessAmount | currency: 'USD' }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="charts">
+    <div class="charts card">
+        <div class="card-head">Pie chart</div>
+        <div class="card-body">
+  <p-chart type="pie" [data]="chartData" [options]="chartOptions"></p-chart>
+</div>
+    </div></div>

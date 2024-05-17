@@ -1,0 +1,187 @@
+<h1>Transactions</h1>
+<p-toast></p-toast>
+<p-toolbar styleClass="mb-4 gap-2" [class.hidden]="!condition">
+  <ng-template pTemplate="left">
+    <p-button
+      pRipple
+      severity="success"
+      label="New Transaction"
+      icon="pi pi-plus"
+      class="mr-2"
+      (click)="openNewTransaction()"
+    ></p-button>
+  </ng-template>
+
+  <ng-template pTemplate="right">
+    <p-button 
+      pRipple 
+      severity="danger" 
+      label="Delete" 
+      icon="pi pi-trash" 
+      (click)="deleteSelectedProducts()" 
+      [disabled]="!selectedTransactions || selectedTransactions.length === 0"
+    ></p-button>
+  </ng-template>
+  
+  
+</p-toolbar>
+
+<p-table
+  #dt
+  [value]="transactions"
+  [rows]="10"
+  [paginator]="true"
+  [globalFilterFields]="['bankName', 'amount', 'category', 'date']"
+  [tableStyle]="{ 'min-width': '75rem' }"
+  dataKey="id"
+  currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+  [showCurrentPageReport]="true"
+  [(selection)]="selectedTransactions"
+  [rowHover]="true"
+>
+  <ng-template pTemplate="caption">
+    <div class="flex align-items-center justify-content-between">
+      <h5 class="m-0">Manage Transactions</h5>
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header">
+    <tr>
+      <th style="width: 4rem">
+        <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+      </th>
+      <th pSortableColumn="bankName" style="min-width:15rem">
+        Bank Name <p-sortIcon field="bankName"></p-sortIcon>
+      </th>
+      <th style="min-width:15rem">
+        Type
+      </th>
+      <th pSortableColumn="amount">
+        Amount <p-sortIcon field="amount"></p-sortIcon>
+      </th>
+      <th pSortableColumn="date">
+        Date <p-sortIcon field="date"></p-sortIcon>
+      </th>
+      <th>
+        Status
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-transaction>
+    <tr>
+      <td>
+        <p-tableCheckbox [value]="transaction"></p-tableCheckbox>
+      </td>
+      <td>
+        {{ transaction.bankName }}
+      </td>
+      <td>
+        {{ transaction.category }}
+      </td>
+      <td>
+        {{ transaction.amount | currency: 'USD' }}
+      </td>
+      <td>
+        {{ transaction.date | date: 'mediumDate' }}
+      </td>
+      <td>
+        {{ transaction.status }}
+      </td>
+      <div [class.hidden]="condition">
+        <td>
+        <p-button
+          pRipple
+          icon="pi pi-check"
+          class="mr-2"
+          [rounded]="true"
+          [outlined]="true"
+          severity="success"
+          (onClick)="setSuccess(transaction)"
+        ></p-button>
+        <p-button
+          pRipple
+          icon="pi pi-times"
+          severity="danger"
+          [rounded]="true"
+          [outlined]="true"
+          (onClick)="setRejected(transaction)"
+        ></p-button>
+      </td>
+    </div>
+
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog 
+  [(visible)]="productDialog" 
+  [style]="{ width: '450px' }" 
+  header="Product Details" 
+  [modal]="true" 
+  styleClass="p-fluid"
+>
+  <ng-template pTemplate="content">
+    <form #signupForm="ngForm" (ngSubmit)="newTransaction(signupForm)">
+      <div class="field">
+        <label for="name">Bank Name</label>
+        <input 
+          type="text" 
+          pInputText 
+          id="name" 
+          name="bankName"
+          required 
+          autofocus 
+          ngModel
+        />
+      </div>
+      <div class="field">
+        <label class="mb-3">Category</label>
+        <div class="formgrid grid">
+          <div class="field-radiobutton col-6">
+            <input 
+              type="radio" 
+              id="Deposit" 
+              name="type" 
+              value="Deposit" 
+              ngModel 
+              required
+            />
+            <label for="Deposit" class="ml-2">Deposit</label>
+          </div>
+          <div class="field-radiobutton col-6">
+            <input 
+              type="radio" 
+              id="Withdrawal" 
+              name="type" 
+              value="Withdrawal" 
+              ngModel 
+              required
+            />
+            <label for="Withdrawal" class="ml-2">Withdrawal</label>
+          </div>
+        </div>
+      </div>
+      <div class="formgrid grid">
+        <div class="field col">
+          <label for="Amount">Amount</label>
+          <p-inputNumber 
+            id="Amount" 
+            name="amount"
+            mode="currency" 
+            currency="USD" 
+            locale="en-US" 
+            ngModel
+            required
+          />
+        </div>
+      </div>
+      <p-button
+        pRipple
+        severity="success"
+        type="submit"
+        label="Create Transaction"
+        icon="pi pi-check"
+        class="mt-3"
+      ></p-button>
+    </form>
+  </ng-template>
+</p-dialog>
